@@ -1,0 +1,5 @@
+interface:
+  display_name: "Generate Project Skills"
+  short_description: "Generate project-level test, code-review and docs-update skills for this repo."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Handoff"
+  short_description: "Compact the session into HANDOFF.md for the next agent."
+policy:
+  allow_implicit_invocation: false

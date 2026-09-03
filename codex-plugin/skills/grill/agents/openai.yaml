@@ -1,0 +1,5 @@
+interface:
+  display_name: "Grill"
+  short_description: "Stress-test a plan or decision through structured rounds of questions."
+policy:
+  allow_implicit_invocation: false

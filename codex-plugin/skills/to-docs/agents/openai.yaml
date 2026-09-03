@@ -1,0 +1,5 @@
+interface:
+  display_name: "To Docs"
+  short_description: "Write the conversation's shared understanding into ARCHITECTURE, SPEC and WORKFLOW."
+policy:
+  allow_implicit_invocation: true

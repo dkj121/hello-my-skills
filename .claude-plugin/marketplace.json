@@ -1,0 +1,13 @@
+{
+  "name": "hello-my-skills",
+  "description": "Self-updating docs-and-workflow skill suite: grill, to-docs, implement, handoff, generate-project-skills",
+  "owner": { "name": "dkj121" },
+  "plugins": [
+    {
+      "name": "hello-my-skills",
+      "source": "./claude-code-plugin",
+      "description": "Self-updating docs-and-workflow skill suite: grill, to-docs, implement, handoff, generate-project-skills",
+      "version": "0.1.0"
+    }
+  ]
+}

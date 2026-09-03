@@ -1,0 +1,5 @@
+interface:
+  display_name: "Implement"
+  short_description: "Implement a task end-to-end: code, tests, review, docs, one commit."
+policy:
+  allow_implicit_invocation: false

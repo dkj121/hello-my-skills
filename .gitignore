@@ -1,0 +1,6 @@
+# ZCode session state
+.zcode/
+
+# OS junk
+Thumbs.db
+.DS_Store
