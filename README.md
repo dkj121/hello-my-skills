@@ -41,9 +41,10 @@ hello-my-skills/
 │   └── generate-project-skills/
 │       └── templates/       # 三个项目级技能模板（占位符待生成器填充）
 ├── claude-code-plugin/      # 生成物：Claude Code 插件（已通过 claude plugin validate）
-├── codex-plugin/            # 生成物：Codex / ChatGPT 插件（含各技能 agents/openai.yaml）
-├── .claude-plugin/          # 生成物：marketplace.json（GitHub 一键安装入口）
-└── scripts/sync.sh          # 由 skills/ 重新生成以上三者
+├── codex-plugin/            # 生成物：Codex / ChatGPT 插件（含各技能 agents/openai.yaml，已实测安装）
+├── .claude-plugin/          # 生成物：Claude marketplace.json（GitHub 一键安装入口）
+├── .agents/plugins/         # 生成物：Codex marketplace.json（GitHub 一键安装入口）
+└── scripts/sync.sh          # 由 skills/ 重新生成以上四个生成物
 ```
 
 三个变体的差异全部由 `scripts/sync.sh` 处理：
@@ -68,7 +69,21 @@ claude --plugin-dir ./claude-code-plugin
 
 ### Codex / ChatGPT（插件）
 
-将 `codex-plugin/` 作为本地 marketplace 安装（参见官方 [Build plugins](https://learn.chatgpt.com/docs/build-plugins) 文档），或采用下面的通用方式。
+从 GitHub 直接安装，与 Claude Code 同理（已用 codex-cli 0.153 实测通过；也可在 `codex` 内输入 `/plugins` 用浏览器操作）：
+
+```bash
+codex plugin marketplace add dkj121/hello-my-skills
+codex plugin add hello-my-skills@hello-my-skills
+```
+
+本地试用（将本仓库作为本地 marketplace 源）：
+
+```bash
+codex plugin marketplace add /path/to/hello-my-skills
+codex plugin add hello-my-skills@hello-my-skills
+```
+
+Codex 读取仓库根的 `.agents/plugins/marketplace.json`（指向 `./codex-plugin`），Claude Code 读取 `.claude-plugin/marketplace.json`（指向 `./claude-code-plugin`）——两套清单互不干扰。
 
 ### 通用（任何支持 [Agent Skills](https://agentskills.io) 的工具：Codex、ZCode、Cursor、Gemini CLI 等）
 

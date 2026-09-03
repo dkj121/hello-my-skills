@@ -1,0 +1,12 @@
+{
+  "name": "hello-my-skills",
+  "interface": { "displayName": "hello-my-skills" },
+  "plugins": [
+    {
+      "name": "hello-my-skills",
+      "source": { "source": "local", "path": "./codex-plugin" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}

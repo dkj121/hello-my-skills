@@ -8,6 +8,7 @@
 #   claude-code-plugin/              Claude Code plugin         (generated)
 #   codex-plugin/                    Codex / ChatGPT plugin     (generated)
 #   .claude-plugin/marketplace.json  root Claude marketplace    (generated)
+#   .agents/plugins/marketplace.json root Codex marketplace     (generated)
 #
 # What differs per variant:
 #   - Frontmatter: the Claude variant gains allowed-tools /
@@ -55,6 +56,7 @@ trap 'rm -rf "${CLEANUP[@]}"' EXIT
 CLAUDE_DIR="$OUT/claude-code-plugin"
 CODEX_DIR="$OUT/codex-plugin"
 MARKETPLACE_DIR="$OUT/.claude-plugin"
+CODEX_MARKETPLACE_DIR="$OUT/.agents/plugins"
 
 # ---------------------------------------------------------------------------
 # Variant-specific "Activating other skills" guides (replace the marker block)
@@ -210,7 +212,7 @@ done
 
 # --- Manifests -----------------------------------------------------------
 
-mkdir -p "$CLAUDE_DIR/.claude-plugin" "$CODEX_DIR/.codex-plugin" "$MARKETPLACE_DIR"
+mkdir -p "$CLAUDE_DIR/.claude-plugin" "$CODEX_DIR/.codex-plugin" "$MARKETPLACE_DIR" "$CODEX_MARKETPLACE_DIR"
 
 cat > "$CLAUDE_DIR/.claude-plugin/plugin.json" <<EOF
 {
@@ -246,13 +248,30 @@ cat > "$MARKETPLACE_DIR/marketplace.json" <<EOF
 }
 EOF
 
+# Codex reads a repo marketplace from .agents/plugins/marketplace.json (the
+# .claude-plugin/ file is legacy-compatible but points at the Claude variant).
+cat > "$CODEX_MARKETPLACE_DIR/marketplace.json" <<EOF
+{
+  "name": "$PLUGIN_NAME",
+  "interface": { "displayName": "$PLUGIN_NAME" },
+  "plugins": [
+    {
+      "name": "$PLUGIN_NAME",
+      "source": { "source": "local", "path": "./codex-plugin" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}
+EOF
+
 # ---------------------------------------------------------------------------
 # Report / check
 # ---------------------------------------------------------------------------
 
 if (( CHECK )); then
   status=0
-  for target in claude-code-plugin codex-plugin .claude-plugin; do
+  for target in claude-code-plugin codex-plugin .claude-plugin .agents/plugins; do
     if ! diff -r -u "$REPO_ROOT/$target" "$OUT/$target" >/dev/null 2>&1; then
       echo "out of date: $target" >&2
       diff -r -u "$REPO_ROOT/$target" "$OUT/$target" >&2 || true
@@ -269,4 +288,5 @@ else
   echo "  claude-code-plugin/  ($(find "$CLAUDE_DIR" -type f | wc -l) files)"
   echo "  codex-plugin/        ($(find "$CODEX_DIR" -type f | wc -l) files)"
   echo "  .claude-plugin/marketplace.json"
+  echo "  .agents/plugins/marketplace.json"
 fi
