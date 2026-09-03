@@ -17,8 +17,10 @@ This skill is a living artifact of this codebase. Before starting:
 
 ## Project facts
 
-- Standards sources: {{STANDARDS_SOURCES}} — plus WORKFLOW.md at the repo root whenever it exists
-- Spec source: SPEC.md at the repo root, the task/ticket text, or the conversation — identify which, and say so in the report
+Recorded at generation time — re-verify paths with a Glob search before relying on them (the user may have moved documents off the repo root):
+
+- Standards sources: {{STANDARDS_SOURCES}} — plus WORKFLOW.md wherever it lives in this repo
+- Spec source: SPEC.md (wherever it lives), the task/ticket text, or the conversation — identify which, and say so in the report
 
 ## Inputs
 

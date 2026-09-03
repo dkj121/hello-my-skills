@@ -25,7 +25,7 @@ This skill is a living artifact of this codebase. Before starting:
 
 ## Workflow
 
-1. **Orient.** Read WORKFLOW.md and ARCHITECTURE.md at the repo root if present. Use the project's domain vocabulary when naming tests and interfaces.
+1. **Orient.** Locate WORKFLOW.md and ARCHITECTURE.md with a Glob search (they may live outside the repo root) and read them if present. Use the project's domain vocabulary when naming tests and interfaces.
 2. **Agree the seam.** A seam is the public boundary where behavior is observed without reaching into internals. Before writing tests, state the seam(s) under test. No test at an unconfirmed seam — if the shape of the interface itself is uncertain, settle that first (with the user if needed).
 3. **Red → green.** Write one failing test, then the minimal code that makes it pass. Repeat in vertical slices: one test → one implementation → the next test. Each test is a tracer bullet; let each cycle shape the next.
 4. **Reuse the existing setup.** If the project already has tests or a test entry script, extend them — don't build a parallel structure. If a root-level entry script is genuinely needed and none exists, create `scripts/test` wrapping {{TEST_COMMAND}}.

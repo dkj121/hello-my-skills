@@ -27,7 +27,7 @@ Ask questions in rounds. The **frontier** is the set of questions whose prerequi
 
 Number questions continuously across the session. Each gets a bold title, the question itself, and a recommended answer:
 
-> 1. ❓ **Persistence layer** — should this project use SQLite or plain JSON files on disk?
+> 1. ❓ **Persistence layer** — should this project use SQLite or plain JSON files on disk?  
 >    ➡️ Recommended: SQLite — the query patterns in the plan need filtering, and stdlib support is good enough.
 
 If the user delegates a question back to you, decide it, record the decision with one line of rationale, and move on.

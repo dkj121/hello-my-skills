@@ -19,7 +19,7 @@
 
 ## skills
 
-由以下 skill 所生成的所有文档都将存放在目标仓库根目录（ARCHITECTURE.md / SPEC.md / WORKFLOW.md / HANDOFF.md / INDEX.md，以及必要时的 `scripts/test`）。
+由以下 skill 所生成的所有文档默认存放在目标仓库根目录（ARCHITECTURE.md / SPEC.md / WORKFLOW.md / HANDOFF.md，以及必要时的 `scripts/test`）。**用户可能自行迁移文档位置**：技能在读取或更新前会用 Glob/Grep 定位文档，就地更新，而不是在根目录另建副本。
 
 |          skills          |  层级  |                                                                                                                             详细描述                                                                                                                              | 是否允许 model 激活 | 工具权限（以 [claude code tools](https://code.claude.com/docs/en/tools-reference) 为例） |
 | :----------------------: | :----: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------: | :--------------------------------------------------------------------------------------: |
@@ -29,7 +29,7 @@
 |         /handoff         | 用户级 |                                          基于 [handoff](https://github.com/mattpocock/skills/blob/main/skills/productivity/handoff)：压缩对话为根目录 HANDOFF.md，含 Suggested skills 小节、敏感信息脱敏、不重复既有文档                                          |         否          |                           Read, Bash, Glob, Grep, Edit, Write                            |
 | /generate-project-skills | 用户级 |                                                读取代码库深度定制（技术栈/测试命令/文档位置/规范），生成三个项目级技能并**同时写入** `.claude/skills/` 与 `.agents/skills/`；每个生成技能含 Self-maintenance 小节                                                 |         否          |                           Read, Bash, Glob, Grep, Edit, Write                            |
 |       /code-review       | 项目级 |                  基于 [code-review](https://github.com/mattpocock/skills/blob/main/skills/engineering/code-review) 两轴审查：Standards（WORKFLOW.md + 项目规范 + smell baseline）与 Spec（SPEC.md/任务）；测试结果由主代理中继注入；只报告不代改                  |         是          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
-|       /docs-update       | 项目级 |                                                          第一步维护根目录 INDEX.md（全仓库文档目录：名称\|路径\|内容\|维护方式\|最后更新）；第二步更新受影响文档（五件套优先）；HANDOFF.md 只收录不编辑                                                           |         是          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
+|       /docs-update       | 项目级 |                 用 Glob/Grep 动态发现全仓库文档（不设集中目录文件）；随后就地更新受影响文档（skill 生成的文档优先）；HANDOFF.md 归 /handoff 管，不代改                 |         是          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
 |          /test           | 项目级 |                              基于 [tdd](https://github.com/mattpocock/skills/blob/main/skills/engineering/tdd)：红绿循环、seams 共识、垂直切片、三大反模式；优先复用项目测试设施，无则生成 `scripts/test`；运行后结果交回主代理中继                               |         是          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
 
 ## 仓库结构

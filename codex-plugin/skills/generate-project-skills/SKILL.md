@@ -14,7 +14,7 @@ Build a fact sheet before writing anything:
 - Tech stack: languages, frameworks, key dependencies (manifests, lockfiles, configs)
 - Test setup: framework, test command(s), single-file test command, where tests live
 - Build / lint / typecheck / format commands
-- Documents: which of ARCHITECTURE.md / SPEC.md / WORKFLOW.md / INDEX.md exist; other docs (README, docs/, ADRs, CONTRIBUTING)
+- Documents: which of ARCHITECTURE.md / SPEC.md / WORKFLOW.md / HANDOFF.md exist and where (Glob for them — the user may have moved them off the root); other docs (README, docs/, ADRs, CONTRIBUTING)
 - Repo layout: the main modules and their roles
 
 Read the templates bundled with this skill: `templates/test/SKILL.md`, `templates/code-review/SKILL.md`, `templates/docs-update/SKILL.md` (relative to this skill's directory).

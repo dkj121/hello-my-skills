@@ -11,9 +11,9 @@ Implement a piece of work, then run the closing chain so that code, tests, revie
 
 ## 1. Orient
 
-1. Read WORKFLOW.md and ARCHITECTURE.md at the repo root (if present) — they are the execution contract.
+1. Locate WORKFLOW.md and ARCHITECTURE.md with a Glob search (e.g. `**/WORKFLOW.md`) — they default to the repository root, but the user may have moved them — and read them if present. They are the execution contract.
 2. Before writing any code, decide whether this task changes how the project gets built, tested, or developed. If it does, update WORKFLOW.md first, so the rest of the work runs against the new reality.
-3. Read SPEC.md if the task references it, plus any tickets or files the user pointed at.
+3. Read SPEC.md (located the same way) if the task references it, plus any tickets or files the user pointed at.
 
 ## 2. Implement
 
@@ -27,9 +27,9 @@ Run the project-level skills in this order. Activate each one and wait for its r
 
 1. **test** — writes/updates and runs the project's tests. Collect its results.
 2. **code-review** — reviews the changes, with the test results as input. Fix what it finds; if fixes touch code, re-run test.
-3. **docs-update** — refreshes INDEX.md and the documents affected by the changes.
+3. **docs-update** — updates the documents affected by the changes (it discovers them itself).
 
-If the project-level skills are not installed (no `test`, `code-review`, or `docs-update` in `.agents/skills/` or `.claude/skills/`), offer to run generate-project-skills first. If the user declines, degrade gracefully: run the test command from WORKFLOW.md, self-review the diff against ARCHITECTURE.md and SPEC.md, and update the root documents yourself.
+If the project-level skills are not installed (no `test`, `code-review`, or `docs-update` in `.agents/skills/` or `.claude/skills/`), offer to run generate-project-skills first. If the user declines, degrade gracefully: run the test command from WORKFLOW.md, self-review the diff against ARCHITECTURE.md and SPEC.md, and update the affected documents yourself.
 
 ## 4. Commit
 
