@@ -1,6 +1,12 @@
 # ZCode session state
 .zcode/
 
+# Claude Code
+.claude/
+
+# Codex
+.agent/
+
 # OS junk
 Thumbs.db
 .DS_Store
