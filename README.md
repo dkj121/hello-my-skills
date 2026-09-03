@@ -72,6 +72,14 @@ claude --plugin-dir ./claude-code-plugin
 
 ### 通用（任何支持 [Agent Skills](https://agentskills.io) 的工具：Codex、ZCode、Cursor、Gemini CLI 等）
 
+通过 [skills.sh](https://www.skills.sh/)（Vercel 维护的 Agent Skills 开放目录，安装时自动适配 Claude Code、Codex、Cursor、Copilot 等主流 agent）一键安装：
+
+```bash
+npx skills add dkj121/hello-my-skills
+```
+
+或手动复制到用户级技能目录：
+
 ```bash
 cp -r skills/* ~/.agents/skills/
 ```
