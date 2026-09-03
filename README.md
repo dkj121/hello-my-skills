@@ -69,7 +69,7 @@ claude --plugin-dir ./claude-code-plugin
 
 ### Codex / ChatGPT（插件）
 
-从 GitHub 直接安装，与 Claude Code 同理（已用 codex-cli 0.153 实测通过；也可在 `codex` 内输入 `/plugins` 用浏览器操作）：
+从 GitHub 直接安装：
 
 ```bash
 codex plugin marketplace add dkj121/hello-my-skills
@@ -82,8 +82,6 @@ codex plugin add hello-my-skills@hello-my-skills
 codex plugin marketplace add /path/to/hello-my-skills
 codex plugin add hello-my-skills@hello-my-skills
 ```
-
-Codex 读取仓库根的 `.agents/plugins/marketplace.json`（指向 `./codex-plugin`），Claude Code 读取 `.claude-plugin/marketplace.json`（指向 `./claude-code-plugin`）——两套清单互不干扰。
 
 ### 通用（任何支持 [Agent Skills](https://agentskills.io) 的工具：Codex、ZCode、Cursor、Gemini CLI 等）
 
