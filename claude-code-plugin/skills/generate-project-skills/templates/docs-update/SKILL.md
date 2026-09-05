@@ -6,7 +6,7 @@ allowed-tools: Read, Bash, Glob, Grep
 
 # Docs Update — Project Guidance
 
-**Note**: This is AI-readable guidance, not a user-invocable workflow. When updating documentation, AI reads this to understand project doc structure and conventions, then chooses appropriate mature skills (like `ecc:docs-sync`) or implements doc updates directly.
+**Note**: This is AI-readable guidance, not a user-invocable workflow. When updating documentation, AI reads this to understand project doc structure and conventions, then chooses appropriate mature doc-sync capabilities or implements doc updates directly based on change scope.
 
 ## Project facts
 
@@ -30,12 +30,34 @@ There is no central catalog — the repository is the source of truth. Discover 
 
 3. **Don't rewrite untouched documents**: Only update docs the changes actually affect.
 
-## Workflow guidance
+## When to update documentation
+
+Update documentation only when implementation changes:
+
+- Documented behavior
+- Architecture or structure
+- Public interfaces or APIs
+- Workflows or operational procedures
+- Build/test/deployment commands
+
+**Do not** modify documentation merely to create activity.
+
+## Proportionality
+
+- **Trivial changes**: May not need doc updates
+- **Command/path changes**: Update specific references
+- **New features**: Add to relevant docs (README, API docs)
+- **Architecture changes**: Update ARCHITECTURE.md, potentially SPEC.md
+
+## Update guidance
 
 When AI needs to implement doc updates for this project:
 
-1. Check if mature doc-sync skills are available (`ecc:docs-sync`, etc.) — use them if present
-2. Otherwise, follow the discovery and update approach above
+**Check for mature doc-sync capabilities:** Look for environment-provided documentation sync tools. Use them when they exist and are appropriate for the change scope.
+
+**Otherwise, implement updates:**
+1. Discover affected documents via Glob/Grep
+2. Update each where it lives (no root duplicates)
 3. Report per-document edits: path + what changed (one line each)
 
 ## Keeping this guidance current

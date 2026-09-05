@@ -34,7 +34,7 @@ Compact the conversation into HANDOFF.md, tailored for the next session to pick 
    - **Where we are** — done / in progress / blocked, in that order
    - **Key decisions** — each with a one-line rationale
    - **Next steps** — concrete, ordered, immediately executable
-   - **Suggested skills** — which skills the next session should start with (e.g. implement) and why
+   - **Suggested approach** — what workflow or capability would be valuable next (e.g., "continue implementation with test-first approach" or "review changes against standards"), not hardcoded skill names
    - **Pitfalls** — anything that tripped this session
 
 5. **Follow handoff rules**:

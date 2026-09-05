@@ -1,13 +1,13 @@
 ---
 name: generate-project-skills
-description: "Generate AI-readable project guidance skills (test, code-review, docs-update) tailored to this codebase, and install them into .claude/skills/ and .agents/skills/. These are context documents for AI, not user-invocable workflows. Use when setting up project guidance or when conventions change."
+description: "Generate AI-readable project guidance skills (test, code-review, docs-update) tailored to this codebase, and install them into .claude/skills/ and .agents/skills/. These provide context for AI to choose appropriate workflows, not hardcoded execution chains."
 ---
 
 # Generate Project Skills
 
 ## Overview
 
-Generate three AI-readable guidance skills for the current project — test, code-review, docs-update — tailored to this codebase. These skills provide project-specific context (test commands, standards sources, doc locations) that AI reads when choosing appropriate workflows. They are **not user-invocable** and **not hardcoded into workflows** — AI reads them as needed for context.
+Generate three AI-readable guidance skills for the current project — test, code-review, docs-update — tailored to this codebase. These skills capture project-specific facts (test commands, standards sources, doc locations) that AI reads when choosing appropriate workflows. They are **guidance documents for AI context**, not user-invocable workflows or hardcoded execution chains.
 
 ## When to use
 
@@ -35,10 +35,16 @@ Generate three AI-readable guidance skills for the current project — test, cod
    - If project has no answer (e.g. no test framework), write the convention project should adopt and flag in report
    - These filled skills are **AI-readable guidance**, not executable workflows
 
-4. **Set frontmatter for AI-only access**: Ensure each generated skill has:
-   - `allowed-tools: Read, Bash, Glob, Grep` (read-only, for AI to verify facts)
-   - NO `disable-model-invocation` or similar — let AI read them freely
-   - Description should indicate "AI guidance" purpose
+4. **Set guidance frontmatter**: Ensure each generated skill has:
+   ```yaml
+   description: "AI-readable guidance for [domain] in this project..."
+   allowed-tools: Read, Bash, Glob, Grep
+   ```
+   
+   This signals:
+   - AI can read them for context (not user-invocable)
+   - Read-only tools (verify facts, don't execute workflows)
+   - Guidance documents, not workflow executors
 
 5. **Install to both locations**: Write each skill to both:
    - `.claude/skills/<name>/SKILL.md`
@@ -52,4 +58,4 @@ Provide:
 - List of generated guidance skills with installation paths
 - Key project facts embedded (test framework, commands, standards sources, doc locations)
 - Gaps or assumptions requiring project decision
-- Reminder: These are AI-readable guidance, not user-invocable or hardcoded workflows
+- Reminder: **These are AI-readable guidance documents**. AI uses them as context when choosing mature capabilities (like ECC skills) or implementing workflows directly. They do not prescribe hardcoded workflow chains.

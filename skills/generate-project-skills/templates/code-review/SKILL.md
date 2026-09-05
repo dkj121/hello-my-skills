@@ -6,7 +6,7 @@ allowed-tools: Read, Bash, Glob, Grep
 
 # Code Review — Project Guidance
 
-**Note**: This is AI-readable guidance, not a user-invocable workflow. When reviewing code, AI reads this to understand project standards and conventions, then chooses appropriate mature skills (like `ecc:code-review`) or implements review workflows directly.
+**Note**: This is AI-readable guidance, not a user-invocable workflow. When reviewing code, AI reads this to understand project standards and conventions, then chooses appropriate mature review capabilities or implements review workflows directly based on task risk and complexity.
 
 ## Project facts
 
@@ -40,16 +40,31 @@ Non-exhaustive — investigate when triggered:
 - Naming that misleads about intent
 - Two levels of abstraction mixed in one function
 
-## Workflow guidance
+## When to perform explicit review
+
+Perform explicit review when any of these apply:
+
+- Multiple modules changed
+- Public API changes
+- Architecture changes
+- Security-sensitive code (auth, authorization, data access, crypto)
+- Concurrency / persistence / migration changes
+- High-risk business logic
+- Task is large or difficult to reason about
+
+For small, low-risk changes, self-check against standards and smell baseline may suffice.
+
+## Review guidance
 
 When AI needs to implement code review for this project:
 
-1. Check if mature review skills are available (`ecc:code-review`, etc.) — use them if present
-2. Otherwise, follow the two-axis approach above
-3. Read the full diff once end-to-end before judging
-4. Provide findings grouped by Standards and Spec
-5. Each finding: `file:line`, what's wrong, why it matters (which rule/requirement), suggested fix
-6. End with verdict: **approve** or **changes needed**
+**Check for mature review capabilities:** Look for environment-provided review tools or workflows. Use them when they exist and are appropriate for the change risk.
+
+**Otherwise, implement review:**
+1. Read the full diff once end-to-end before judging
+2. Provide findings grouped by Standards and Spec
+3. Each finding: `file:line`, what's wrong, why it matters (which rule/requirement), suggested fix
+4. End with verdict: **approve** or **changes needed**
 
 ## Keeping this guidance current
 

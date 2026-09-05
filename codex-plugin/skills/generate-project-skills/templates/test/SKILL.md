@@ -6,7 +6,7 @@ allowed-tools: Read, Bash, Glob, Grep
 
 # Test — Project Guidance
 
-**Note**: This is AI-readable guidance, not a user-invocable workflow. When implementing tests, AI reads this to understand project conventions, then chooses appropriate mature skills (like `ecc:tdd`) or implements test workflows directly.
+**Note**: This is AI-readable guidance, not a user-invocable workflow. When implementing tests, AI reads this to understand project conventions, then chooses appropriate mature capabilities or implements test workflows directly based on task risk and complexity.
 
 ## Project facts
 
@@ -18,25 +18,41 @@ allowed-tools: Read, Bash, Glob, Grep
 
 ## Testing approach
 
-1. **Prefer TDD when appropriate**: For new features, write tests first using red → green cycles with vertical slicing (one test → minimal implementation → next test).
+**Prefer TDD when appropriate and practical:**
+- For new features where behavior is well-understood: write tests first using red → green cycles with vertical slicing
+- For bug fixes: prefer reproducing the failure as a test when practical
+- For refactoring: ensure tests exist and pass before changes
 
-2. **Agree on seams first**: A seam is the public boundary where behavior is observed. Before writing tests, confirm the seam with the user if unclear. Test at seams, not internals.
+**Agree on seams first:** A seam is the public boundary where behavior is observed. Before writing tests, confirm the seam if unclear. Test at seams, not internals.
 
-3. **Reuse existing test infrastructure**: Extend existing test files and patterns rather than creating parallel structures.
+**Reuse existing test infrastructure:** Extend existing test files and patterns rather than creating parallel structures.
 
-4. **Anti-patterns to avoid**:
-   - Implementation-coupled tests (mocking internals, testing private methods)
-   - Tautological tests (recomputing expected values the same way code does)
-   - Horizontal slicing (writing all tests before any implementation)
+**Anti-patterns to avoid:**
+- Implementation-coupled tests (mocking internals, testing private methods)
+- Tautological tests (recomputing expected values the same way code does)
+- Horizontal slicing (writing all tests before any implementation)
 
-## Workflow guidance
+## Proportionality
 
-When AI needs to implement testing for this project:
+Match test effort to risk and complexity:
 
-1. Check if mature test skills are available (`ecc:tdd`, `ecc:test-runner`, etc.) — use them if present
-2. Otherwise, follow the TDD approach above using the project's test commands
-3. Run tests using {{TEST_COMMAND}} and collect results
-4. Report: what ran, pass/fail counts, failures with `file:line`, diagnosis
+- **Trivial changes** (typo, config): Verify behavior, may not need new tests
+- **Small changes** (add parameter, simple logic): Focused unit tests
+- **Feature additions**: Test-first when practical, cover key behaviors
+- **Architecture changes**: Broader test coverage, integration tests
+
+## Validation guidance
+
+When AI needs to validate work in this project:
+
+**Run sufficient validation for the risk level:**
+1. Focused checks for changed area: `{{SINGLE_TEST_COMMAND}}`
+2. Relevant unit/integration tests when risk warrants
+3. Full suite when appropriate: `{{TEST_COMMAND}}`
+
+**Do not** run full 2-hour CI for a typo fix. Match validation to risk.
+
+**Check for mature test capabilities:** Look for environment-provided test runners or TDD workflows. Use them when they exist and materially improve the workflow.
 
 ## Keeping this guidance current
 

@@ -1,75 +1,182 @@
 ---
 name: implement
-description: "Implement a piece of work described by a spec, ticket, or the conversation — orienting on the project docs, choosing appropriate workflow and mature skills, and landing everything in one commit. Use when the user asks to implement, build, or fix something substantial."
+description: "Personal engineering router that classifies work, assesses risk, and selects appropriate workflows. Delegates to mature capabilities when available, implements directly when needed. Use when the user asks to implement, build, or fix something."
 ---
 
 # Implement
 
 ## Overview
 
-Implement a piece of work by reading project context, then choosing the appropriate workflow and skills based on the task nature and available mature skills. The goal is one commit containing code, tests, review fixes, and doc updates — but the path to get there is flexible.
+A personal workflow router that understands the task, classifies its nature and risk, then selects the appropriate workflow and capabilities to complete it. Acts as a supervisor layer above project-specific workflows and mature skill libraries, not as a fixed execution chain.
 
 ## When to use
 
-- When the user asks to implement, build, or fix something substantial
+- When the user asks to implement, build, or fix something
 - When a spec, ticket, or conversation describes work to be done
-- For any feature or fix that needs tests, review, and documentation
+- As the entry point for substantial engineering work
 
 ## Steps
 
-1. **Orient on project context**: 
-   - Locate and read WORKFLOW.md, ARCHITECTURE.md, SPEC.md with Glob searches (`**/WORKFLOW.md`, etc.) — they default to the repository root but may have been moved
-   - Check for project guidance documents in `.claude/project-guide/` or `.agents/project-guide/` (created by generate-project-skills) — these contain project-specific test commands, standards sources, and documentation locations
-   - If the task changes how the project gets built, tested, or developed, update WORKFLOW.md first
+### 1. Orient on context
 
-2. **Choose appropriate workflow**: Based on the task nature, project context, and available skills, select the workflow. Examples:
-   
-   **For TDD-suitable features:**
-   - Check if `ecc:tdd` or similar mature TDD skill is available → use it
-   - Otherwise: implement test-first at pre-agreed seams (red → green cycles, vertical slices)
-   - Run tests frequently; collect results for review
-   
-   **For bug fixes:**
-   - Write reproduction test first
-   - Fix the code
-   - Run full suite
-   
-   **For refactoring:**
-   - Ensure tests exist and pass
-   - Make changes
-   - Verify tests still pass
-   
-   **For documentation-only changes:**
-   - Update affected documents
-   - No test/review cycle needed
+Locate and read project documents to understand the execution contract:
+- WORKFLOW.md, ARCHITECTURE.md, SPEC.md (use Glob: `**/WORKFLOW.md`, etc.)
+- Project guidance skills in `.claude/skills/` or `.agents/skills/` (if exist, read for context)
+- Task description, tickets, or referenced files
 
-3. **Run tests**: Execute the project's test suite using:
-   - Test command from WORKFLOW.md or project guidance
-   - Mature test skill if available (e.g., `ecc:test-runner`)
-   - Collect results for the review step
+### 2. Classify the work
 
-4. **Review changes**: Check the implementation against standards and spec:
-   - Use `ecc:code-review` or similar mature review skill if available
-   - Otherwise: self-review against ARCHITECTURE.md, SPEC.md, and WORKFLOW.md conventions
-   - Provide test results as input to the review
-   - Fix any issues found; re-run tests if code changed
+Before choosing a workflow, determine:
 
-5. **Update documentation**: Discover and update affected documents:
-   - Use `ecc:docs-sync` or similar if available
-   - Otherwise: Glob/Grep to find affected docs (ARCHITECTURE.md, SPEC.md, WORKFLOW.md, README, API docs)
-   - Update each where it lives (don't create root duplicates)
-   - HANDOFF.md is owned by /handoff — don't edit it
+**Change characteristics:**
+- Size: trivial / small / medium / large
+- Behavioral impact: none / local / module / system-wide
+- Architectural impact: none / refactor / new pattern / architecture change
+- Uncertainty: clear / some unknowns / exploratory
+- Testability: easily testable / integration needed / hard to test
+- Security sensitivity: routine / touches auth/data / security-critical
+- Documentation impact: none / inline / architecture docs needed
+- Reversibility: trivial rollback / needs migration / irreversible
 
-6. **Commit everything**: Create a single commit on the current branch with:
-   - Code changes
-   - Tests (new or updated)
-   - Review fixes
-   - Doc updates
-   - Follow commit conventions from WORKFLOW.md
+**Task type** (may be multiple):
+- Trivial/local change (typo, config, simple fix)
+- Bug fix (regression / flaky test / production issue / dependency vuln)
+- Behavioral change (modify existing feature)
+- New feature (add capability)
+- Refactor (same behavior, better structure)
+- Architecture change (cross-cutting, foundational)
+- Documentation-only
+- Operational/configuration
+- Security-sensitive
+
+### 3. Select workflow
+
+Based on classification, choose the narrowest workflow that provides sufficient confidence:
+
+**For trivial/local changes:**
+- Implement directly
+- Focused verification
+- Done
+
+**For bug fixes:**
+- Prefer reproducing the failure before changing behavior when practical
+- Add regression test when failure can be expressed as stable automated test
+- Choose verification scope based on risk
+
+**For new features:**
+- Check if mature TDD capability exists and is materially useful
+- Prefer test-first when practical: agree seam → red → green cycles
+- Otherwise: implement → verify → test coverage where needed
+
+**For refactoring:**
+- Ensure tests exist and pass before changes
+- Make changes
+- Verify tests still pass
+- Add tests if coverage was insufficient
+
+**For architecture changes:**
+- Update WORKFLOW.md or ARCHITECTURE.md first if foundational contracts change
+- Consider broader validation and review
+- Document decisions
+
+**For documentation-only:**
+- Update affected documents
+- No test/review cycle needed unless changing runbooks or critical procedures
+
+**Proportionality principle:**
+Do not introduce process overhead disproportionate to risk or complexity. Small, low-risk changes get focused verification. Larger or riskier changes progressively add: planning → tests → review → documentation → broader verification.
+
+### 4. Execute with appropriate capabilities
+
+**Check for mature capabilities first:**
+- Look for project-installed or environment-provided mature skills
+- Examples: TDD guidance, test runners, review tools, security scanners, doc sync
+- Prefer mature capabilities when they exist and materially improve the workflow
+
+**If mature capabilities available:**
+- Use them according to their guidance
+- Example: A project may have mature TDD workflow — follow it
+- Example: An environment may provide review capability — use it
+
+**If implementing directly:**
+- Follow the workflow selected in step 3
+- Use project guidance (test commands, standards sources, doc locations) as context
+- Apply appropriate engineering practices for the task type
+
+### 5. Validate
+
+Run sufficient validation for the risk level:
+
+**Prefer, in order:**
+1. Focused checks for the changed area (fast feedback)
+2. Relevant unit/integration tests (confidence in change)
+3. Broader project tests when risk warrants (regression confidence)
+4. Full suite before completion when appropriate (high-risk changes)
+
+Use test commands from WORKFLOW.md or project guidance when available.
+
+**Do not:** Run 2-hour CI for a typo fix. Match validation to risk.
+
+### 6. Review
+
+Perform explicit review when any of these apply:
+
+- Multiple modules changed
+- Public API changes
+- Architecture changes
+- Security-sensitive code (auth, authorization, data access, crypto)
+- Concurrency / persistence / migration changes
+- High-risk business logic
+- Task is large or difficult to reason about
+
+**Check for mature review capability:**
+- Project may have review workflow or standards
+- Environment may provide review tools
+- Use when available and appropriate
+
+**Otherwise:** Self-review against ARCHITECTURE.md, SPEC.md, WORKFLOW.md conventions and smell baseline:
+- Abstraction for single caller
+- Duplicated logic that could share a seam
+- Dead code, leftover debug output
+- Error swallowing
+- Misleading names
+- Mixed abstraction levels
+
+Fix issues found. Re-run validation if code changed.
+
+### 7. Update documentation
+
+Update documentation only when implementation changes documented behavior, architecture, public interfaces, workflows, or operational procedures.
+
+**Do not** modify documentation merely to create activity.
+
+**Discover affected documents:**
+- Glob for skill-owned docs: `**/ARCHITECTURE.md`, `**/SPEC.md`, `**/WORKFLOW.md`
+- Grep to find which docs mention what changed
+- Update each where it lives — never create root duplicates
+- Match each document's existing tone and language
+- HANDOFF.md is owned by /handoff — don't edit it
+
+**Check for mature doc-sync capability** and use if available.
+
+### 8. Land the work
+
+Commit according to repository conventions found in WORKFLOW.md.
+
+**Prefer a clean, coherent commit history.**
+
+Create a single commit when the repository workflow or task context calls for it. For larger tasks, consider whether intermediate commits aid review, bisect, or understanding. Let project commit policy guide this decision, not a blanket rule.
 
 ## Report
 
-State what was implemented, which workflow/skills were used, and confirm the commit was created with all outputs included.
+State:
+- Task classification (type, size, risk factors)
+- Workflow selected and why
+- Capabilities used (mature skills invoked or direct implementation)
+- Validation performed
+- Review outcome (if applicable)
+- Documentation updated (if applicable)
+- Commit status
 
 <!-- activation-guide start -->
 ## Activating other skills

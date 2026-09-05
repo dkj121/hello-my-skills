@@ -1,6 +1,6 @@
 ---
 name: to-docs
-description: "Turn the shared understanding from this conversation into three living project documents — ARCHITECTURE.md, SPEC.md, and WORKFLOW.md. Use when the user asks to write up, document, or spec the plan or project, or right after a design discussion (e.g. a grill session) reaches confirmed consensus."
+description: "Turn the shared understanding from this conversation into three living project documents — ARCHITECTURE.md, SPEC.md, and WORKFLOW.md. Use when the user asks to write up, document, or spec the plan or project, or right after a design discussion reaches confirmed consensus."
 allowed-tools: Read, Bash, Glob, Grep, Edit, Write
 ---
 
@@ -14,8 +14,8 @@ Distill the conversation's confirmed understanding into three project documents:
 
 - After a design discussion reaches confirmed consensus
 - When the user asks to "write up", "document", or "spec" the plan
-- Right after a grill session completes
 - When project understanding needs to be captured in living documents
+- When project conventions or architecture have changed
 
 ## Steps
 
@@ -44,18 +44,23 @@ Distill the conversation's confirmed understanding into three project documents:
    - **Further Notes**
 
 6. **Write WORKFLOW.md** (the process):
-   The operational contract that the implement skill executes against:
+   The operational contract that describes how work gets done:
    - Exact commands: setup, build, run, test, lint/typecheck
    - Workflow conventions: branching, commit style, definition of done
-   - Which project-level skills exist (test, code-review, docs-update) and when they run
+   - Available capabilities: note which mature skills or project guidance exists (if any)
+   
+   **Do not prescribe a fixed workflow chain.** Describe the project's conventions and available capabilities, not a hardcoded sequence of skill invocations.
 
 7. **Follow writing rules**:
    - Write for a competent engineer new to this project
    - Keep each document focused; link out to dedicated docs rather than inlining detail
    - Don't duplicate what git history records (no "last updated" stamps)
 
+8. **Proportionality**: For small updates (correcting a command, adding a section), make the focused change. For new projects or major overhauls, write complete documents.
+
 ## Report
 
 Briefly state:
 - What changed in each document (ARCHITECTURE.md, SPEC.md, WORKFLOW.md)
 - Where each document lives (file paths)
+- Nature of changes (new document / updated sections / minor corrections)
