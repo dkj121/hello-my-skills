@@ -4,18 +4,31 @@
 
 ## 设计哲学
 
-主张将 project codebase 作为 skill 设计原则，依据代码库实时更新 project level skills。
-
-随着 LLMs 的发展，配合合适的 harness，AI 本身已经基本能够掌握整个代码仓库。本仓库的 skills 主要以一次 `git commit` 为单位，构成一组能够自主更新的工作流：
+主张将 **project codebase 作为上下文源**，而非将工作流固化为硬编码技能链。随着 LLMs 的发展，配合合适的 harness，AI 本身已经基本能够掌握整个代码仓库并选择合适的工作流。
 
 ```
-/grill ──→ /to-docs ──→ /implement ──┬─→ /test ──→ /code-review ──→ /docs-update ──→ 一次 git commit
-                                     └─→（项目级技能缺失时）/generate-project-skills
+/grill ──→ /to-docs ──→ /implement ──→（用户激活时）注入项目指导 ──→ AI 选择成熟技能
+                                     └─→ /generate-project-skills（生成指导文档）
 ```
 
-- **自维护**：`/generate-project-skills` 生成项目级技能时，会在每个生成的技能中嵌入 Self-maintenance 小节——技能被调用时先自检与代码库的漂移（命令变了、规范文档新增了、目录改了），先更新自身再执行任务
-- **一次提交闭环**：`/implement` 的收尾链（test → code-review → docs-update）全部完成后，代码、测试、审查修复、文档更新与技能自更新作为**单个 commit** 落地
-- **主代理中继**：`/test` 的结果由主代理顺序转发给 `/code-review` 作为审查输入，不依赖后台任务或轮询，三种 harness 行为一致
+### 核心原则
+
+- **指导而非固化**：`/generate-project-skills` 生成的是**指导文档**（项目测试命令、规范来源、文档位置等），而非硬编码的可执行技能。这些指导在 AI 需要时注入上下文，帮助 AI 理解项目约定。
+
+- **AI 自主选择工作流**：`/implement` 不再强制 test → code-review → docs-update 的固定链条。AI 根据：
+  - 项目指导文档（如果存在）
+  - 项目 WORKFLOW.md / ARCHITECTURE.md / SPEC.md
+  - 任务性质（TDD、修复、重构、文档）
+  - 可用的成熟技能（如 ECC 的 `ecc:tdd`、`ecc:code-review` 等）
+  
+  自主选择合适的工作流和技能组合。
+
+- **一次提交闭环**：无论 AI 选择何种工作流，最终目标不变：代码、测试、审查修复、文档更新在一次 git commit 中完成。
+
+- **渐进增强**：
+  - 项目没有指导文档 → AI 依据 WORKFLOW.md 等项目文档工作
+  - 项目有指导文档 → AI 获得更精确的上下文（测试命令、规范位置）
+  - 有成熟技能可用 → AI 优先使用（如 `ecc:tdd` 而非自己实现 TDD）
 
 ## skills
 
@@ -25,12 +38,9 @@
 | :----------------------: | :----: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------: | :--------------------------------------------------------------------------------------: |
 |          /grill          | 用户级 | 基于 [grilling](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling)：设计树 + frontier 轮次提问，每题附推荐答案；事实性问题自查不问用户；**每轮题量由 AI 依据 frontier 决定**（工具单次调用受限时拆为连续调用）；共识确认后激活 /to-docs |         否          |                         Read, Bash, Glob, Grep, AskUserQuestion                          |
 |         /to-docs         | 用户级 |                       基于 [to-spec](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec)：将共识沉淀为根目录 ARCHITECTURE.md（结构）/ SPEC.md（目标，沿用 to-spec 七段模板）/ WORKFLOW.md（流程）；增量更新不盲覆盖                        |         是          |                           Read, Bash, Glob, Grep, Edit, Write                            |
-|        /implement        | 用户级 |           基于 [implement](https://github.com/mattpocock/skills/tree/main/skills/engineering/implement)：先评估 WORKFLOW.md 是否需更新 → 执行任务（TDD、seams 共识）→ 收尾链 /test → /code-review（携带测试结果）→ /docs-update → **一次性 git commit**           |         否          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
+|        /implement        | 用户级 |           基于 [implement](https://github.com/mattpocock/skills/tree/main/skills/engineering/implement)：读取项目文档与指导（如有），由 AI 自主选择合适的工作流与技能（优先使用成熟技能如 `ecc:tdd`、`ecc:code-review`），最终**一次性 git commit**           |         否          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
 |         /handoff         | 用户级 |                                          基于 [handoff](https://github.com/mattpocock/skills/blob/main/skills/productivity/handoff)：压缩对话为根目录 HANDOFF.md，含 Suggested skills 小节、敏感信息脱敏、不重复既有文档                                          |         否          |                           Read, Bash, Glob, Grep, Edit, Write                            |
-| /generate-project-skills | 用户级 |                                                读取代码库深度定制（技术栈/测试命令/文档位置/规范），生成三个项目级技能并**同时写入** `.claude/skills/` 与 `.agents/skills/`；每个生成技能含 Self-maintenance 小节                                                 |         否          |                           Read, Bash, Glob, Grep, Edit, Write                            |
-|       /code-review       | 项目级 |                  基于 [code-review](https://github.com/mattpocock/skills/blob/main/skills/engineering/code-review) 两轴审查：Standards（WORKFLOW.md + 项目规范 + smell baseline）与 Spec（SPEC.md/任务）；测试结果由主代理中继注入；只报告不代改                  |         是          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
-|       /docs-update       | 项目级 |                 用 Glob/Grep 动态发现全仓库文档（不设集中目录文件）；随后就地更新受影响文档（skill 生成的文档优先）；HANDOFF.md 归 /handoff 管，不代改                 |         是          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
-|          /test           | 项目级 |                              基于 [tdd](https://github.com/mattpocock/skills/blob/main/skills/engineering/tdd)：红绿循环、seams 共识、垂直切片、三大反模式；优先复用项目测试设施，无则生成 `scripts/test`；运行后结果交回主代理中继                               |         是          |                        Read, Bash, Glob, Grep, Edit, Write, Agent                        |
+| /generate-project-skills | 用户级 |                                                读取代码库深度定制（技术栈/测试命令/文档位置/规范），生成**项目指导文档**并写入 `.claude/project-guide/` 与 `.agents/project-guide/`，供 AI 在需要时读取作为上下文                                                 |         否          |                           Read, Bash, Glob, Grep, Edit, Write                            |
 
 ## 仓库结构
 
@@ -104,4 +114,3 @@ cp -r skills/* ~/.agents/skills/
 1. 修改 `skills/` 下的 canonical 源（英文正文，中性措辞 + `activation-guide` 标记块）
 2. 运行 `scripts/sync.sh` 重新生成两个插件目录与 marketplace.json
 3. `scripts/sync.sh --check` 校验生成物与源同步（可用于 CI）
-4. 提交：canonical 源与生成物同入一个 commit

@@ -1,41 +1,75 @@
 ---
 name: implement
-description: "Implement a piece of work described by a spec, ticket, or the conversation — orienting on the project docs, driving the work through test, code review, and doc updates, and landing everything in one commit. Use when the user asks to implement, build, or fix something substantial."
+description: "Implement a piece of work described by a spec, ticket, or the conversation — orienting on the project docs, choosing appropriate workflow and mature skills, and landing everything in one commit. Use when the user asks to implement, build, or fix something substantial."
 ---
 
 # Implement
 
-Implement a piece of work, then run the closing chain so that code, tests, review fixes, doc updates, and skill self-updates land together in a single commit.
+## Overview
 
-## 1. Orient
+Implement a piece of work by reading project context, then choosing the appropriate workflow and skills based on the task nature and available mature skills. The goal is one commit containing code, tests, review fixes, and doc updates — but the path to get there is flexible.
 
-1. Locate WORKFLOW.md and ARCHITECTURE.md with a Glob search (e.g. `**/WORKFLOW.md`) — they default to the repository root, but the user may have moved them — and read them if present. They are the execution contract.
-2. Before writing any code, decide whether this task changes how the project gets built, tested, or developed. If it does, update WORKFLOW.md first, so the rest of the work runs against the new reality.
-3. Read SPEC.md (located the same way) if the task references it, plus any tickets or files the user pointed at.
+## When to use
 
-## 2. Implement
+- When the user asks to implement, build, or fix something substantial
+- When a spec, ticket, or conversation describes work to be done
+- For any feature or fix that needs tests, review, and documentation
 
-- Implement the work described by the user, the spec, or the tickets.
-- Prefer test-driven development at pre-agreed seams: settle the seam (the public boundary where behavior is observed) before writing the test; one failing test, then the minimal code to pass it; repeat in vertical slices.
-- Run typechecking frequently and single test files as you go. The full suite runs in the closing chain.
+## Steps
 
-## 3. Closing chain
+1. **Orient on project context**: 
+   - Locate and read WORKFLOW.md, ARCHITECTURE.md, SPEC.md with Glob searches (`**/WORKFLOW.md`, etc.) — they default to the repository root but may have been moved
+   - Check for project guidance documents in `.claude/project-guide/` or `.agents/project-guide/` (created by generate-project-skills) — these contain project-specific test commands, standards sources, and documentation locations
+   - If the task changes how the project gets built, tested, or developed, update WORKFLOW.md first
 
-Run the project-level skills in this order. Activate each one and wait for its result before starting the next:
+2. **Choose appropriate workflow**: Based on the task nature, project context, and available skills, select the workflow. Examples:
+   
+   **For TDD-suitable features:**
+   - Check if `ecc:tdd` or similar mature TDD skill is available → use it
+   - Otherwise: implement test-first at pre-agreed seams (red → green cycles, vertical slices)
+   - Run tests frequently; collect results for review
+   
+   **For bug fixes:**
+   - Write reproduction test first
+   - Fix the code
+   - Run full suite
+   
+   **For refactoring:**
+   - Ensure tests exist and pass
+   - Make changes
+   - Verify tests still pass
+   
+   **For documentation-only changes:**
+   - Update affected documents
+   - No test/review cycle needed
 
-1. **test** — writes/updates and runs the project's tests. Collect its results.
-2. **code-review** — reviews the changes, with the test results as input. Fix what it finds; if fixes touch code, re-run test.
-3. **docs-update** — updates the documents affected by the changes (it discovers them itself).
+3. **Run tests**: Execute the project's test suite using:
+   - Test command from WORKFLOW.md or project guidance
+   - Mature test skill if available (e.g., `ecc:test-runner`)
+   - Collect results for the review step
 
-If the project-level skills are not installed (no `test`, `code-review`, or `docs-update` in `.agents/skills/` or `.claude/skills/`), offer to run generate-project-skills first. If the user declines, degrade gracefully: run the test command from WORKFLOW.md, self-review the diff against ARCHITECTURE.md and SPEC.md, and update the affected documents yourself.
+4. **Review changes**: Check the implementation against standards and spec:
+   - Use `ecc:code-review` or similar mature review skill if available
+   - Otherwise: self-review against ARCHITECTURE.md, SPEC.md, and WORKFLOW.md conventions
+   - Provide test results as input to the review
+   - Fix any issues found; re-run tests if code changed
 
-## 4. Commit
+5. **Update documentation**: Discover and update affected documents:
+   - Use `ecc:docs-sync` or similar if available
+   - Otherwise: Glob/Grep to find affected docs (ARCHITECTURE.md, SPEC.md, WORKFLOW.md, README, API docs)
+   - Update each where it lives (don't create root duplicates)
+   - HANDOFF.md is owned by /handoff — don't edit it
 
-Commit everything — code, tests, review fixes, doc updates, and any skill self-updates from the chain — as a single commit on the current branch, following the commit conventions in WORKFLOW.md.
+6. **Commit everything**: Create a single commit on the current branch with:
+   - Code changes
+   - Tests (new or updated)
+   - Review fixes
+   - Doc updates
+   - Follow commit conventions from WORKFLOW.md
 
-## Subagents
+## Report
 
-Where your harness supports subagents (e.g. an Agent tool), run each closing-chain skill as a subagent to keep context clean, and relay the test results into the code-review subagent yourself. Without subagent support, run each skill inline, in order — the result flow is identical.
+State what was implemented, which workflow/skills were used, and confirm the commit was created with all outputs included.
 
 <!-- activation-guide start -->
 ## Activating other skills

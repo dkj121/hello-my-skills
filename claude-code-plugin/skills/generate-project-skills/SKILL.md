@@ -1,41 +1,57 @@
 ---
 name: generate-project-skills
-description: "Generate the three project-level skills (test, code-review, docs-update) for the current project, tailored to its codebase, and install them into .claude/skills/ and .agents/skills/. Use when setting up this workflow in a project for the first time or regenerating the project skills after major changes."
+description: "Generate AI-readable project guidance skills (test, code-review, docs-update) tailored to this codebase, and install them into .claude/skills/ and .agents/skills/. These are context documents for AI, not user-invocable workflows. Use when setting up project guidance or when conventions change."
 allowed-tools: Read, Bash, Glob, Grep, Edit, Write
 disable-model-invocation: true
 ---
 
 # Generate Project Skills
 
-Generate three project-level skills for the current project — test, code-review, docs-update — tailored to this codebase, and install them into the project at both `.claude/skills/` and `.agents/skills/` (identical content; Claude Code reads the former, Codex and other agents read the latter).
+## Overview
 
-## 1. Study the project
+Generate three AI-readable guidance skills for the current project — test, code-review, docs-update — tailored to this codebase. These skills provide project-specific context (test commands, standards sources, doc locations) that AI reads when choosing appropriate workflows. They are **not user-invocable** and **not hardcoded into workflows** — AI reads them as needed for context.
 
-Build a fact sheet before writing anything:
+## When to use
 
-- Tech stack: languages, frameworks, key dependencies (manifests, lockfiles, configs)
-- Test setup: framework, test command(s), single-file test command, where tests live
-- Build / lint / typecheck / format commands
-- Documents: which of ARCHITECTURE.md / SPEC.md / WORKFLOW.md / HANDOFF.md exist and where (Glob for them — the user may have moved them off the root); other docs (README, docs/, ADRs, CONTRIBUTING)
-- Repo layout: the main modules and their roles
+- Setting up workflow guidance in a project for the first time
+- When project conventions change (new test framework, moved documents, updated standards)
+- When AI needs project-specific context to work effectively
 
-Read the templates bundled with this skill: `templates/test/SKILL.md`, `templates/code-review/SKILL.md`, `templates/docs-update/SKILL.md` (relative to this skill's directory).
+## Steps
 
-## 2. Fill the templates
+1. **Study the project**: Build a fact sheet:
+   - Tech stack: languages, frameworks, key dependencies (manifests, lockfiles, configs)
+   - Test setup: framework, test command(s), single-file test command, where tests live
+   - Build / lint / typecheck / format commands
+   - Documents: which of ARCHITECTURE.md / SPEC.md / WORKFLOW.md / HANDOFF.md exist and where (Glob for them); other docs (README, docs/, ADRs, CONTRIBUTING)
+   - Standards sources: style guides, CONTRIBUTING.md, convention documents
+   - Repo layout: main modules and their roles
 
-Each template contains `{{PLACEHOLDER}}` markers. Replace every placeholder with a fact from step 1 — never leave a placeholder behind, and never guess: if the project has no answer (e.g. no test framework), write the convention the project should adopt and flag it in your report.
+2. **Read the templates**: Read bundled guidance templates:
+   - `templates/test/SKILL.md`
+   - `templates/code-review/SKILL.md`
+   - `templates/docs-update/SKILL.md`
 
-Keep each template's **Self-maintenance** section intact — it is what keeps the generated skills aligned with the codebase over time.
+3. **Fill the templates**: Replace all `{{PLACEHOLDER}}` markers with facts from step 1:
+   - Never leave placeholders behind
+   - If project has no answer (e.g. no test framework), write the convention project should adopt and flag in report
+   - These filled skills are **AI-readable guidance**, not executable workflows
 
-## 3. Install
+4. **Set frontmatter for AI-only access**: Ensure each generated skill has:
+   - `allowed-tools: Read, Bash, Glob, Grep` (read-only, for AI to verify facts)
+   - NO `disable-model-invocation` or similar — let AI read them freely
+   - Description should indicate "AI guidance" purpose
 
-Write each filled skill to both locations:
+5. **Install to both locations**: Write each skill to both:
+   - `.claude/skills/<name>/SKILL.md`
+   - `.agents/skills/<name>/SKILL.md`
+   
+   If skill exists, read it first: preserve customizations, then regenerate. Keep locations in sync.
 
-- `.claude/skills/<name>/SKILL.md`
-- `.agents/skills/<name>/SKILL.md`
+## Report
 
-If a skill already exists in either location, read it first: preserve project-specific customizations that are still accurate, then regenerate. Never leave the two locations out of sync.
-
-## 4. Report
-
-List the skills generated, the key project facts embedded in each, and anything left for the project to decide (e.g. "no test framework found — template assumes `node --test`").
+Provide:
+- List of generated guidance skills with installation paths
+- Key project facts embedded (test framework, commands, standards sources, doc locations)
+- Gaps or assumptions requiring project decision
+- Reminder: These are AI-readable guidance, not user-invocable or hardcoded workflows

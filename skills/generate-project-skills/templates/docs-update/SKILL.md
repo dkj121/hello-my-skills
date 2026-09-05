@@ -1,41 +1,43 @@
 ---
 name: docs-update
-description: "Keep the project's documentation in sync with the codebase — discover the project's documents with Glob/Grep, then update the ones affected by recent changes. Use after changes land, when the user asks to update docs, or when documents have drifted from the code."
-allowed-tools: Read, Bash, Glob, Grep, Edit, Write, Agent
+description: "AI-readable guidance for documentation updates in this project. Contains project-specific doc locations and update approach. AI reads this for context when implementing doc update workflows, not as a user-invocable skill."
+allowed-tools: Read, Bash, Glob, Grep
 ---
 
-# Docs Update
+# Docs Update — Project Guidance
 
-Find the project's documents, then update the ones the recent changes affected.
-
-## Self-maintenance — run this first
-
-This skill is a living artifact of this codebase. Before starting:
-
-1. Verify the document locations below still match reality (Glob for them — the user may have moved documents since this skill was written).
-2. If new documentation areas appeared (a `docs/` subtree, an ADR folder), record them in this SKILL.md first (both copies: `.claude/skills/docs-update/` and `.agents/skills/docs-update/`), then include them in your discovery.
+**Note**: This is AI-readable guidance, not a user-invocable workflow. When updating documentation, AI reads this to understand project doc structure and conventions, then chooses appropriate mature skills (like `ecc:docs-sync`) or implements doc updates directly.
 
 ## Project facts
 
 - Known documentation locations: {{DOC_LOCATIONS}} — plus the repo root (ARCHITECTURE.md, SPEC.md, WORKFLOW.md, HANDOFF.md default there)
 
-## Step 1 — Discover the documents
+## Documentation approach
 
-There is no central catalog — the repository is the source of truth. Discover documents dynamically every run:
+There is no central catalog — the repository is the source of truth. Discover documents dynamically:
 
-- Glob for the skill-owned documents wherever they live: `**/ARCHITECTURE.md`, `**/SPEC.md`, `**/WORKFLOW.md`, `**/HANDOFF.md`. They default to the repo root, but the user may have moved them.
-- Glob for the project's other documentation, guided by the known locations above and the repo layout: `*.md`, `docs/**/*.md`, `**/CONTRIBUTING.md`, ADR folders.
-- Grep the discovered documents when you need to know which ones mention what changed — a renamed command, a moved file, a changed endpoint.
+1. **Discover documents**:
+   - Glob for skill-owned documents: `**/ARCHITECTURE.md`, `**/SPEC.md`, `**/WORKFLOW.md`, `**/HANDOFF.md`
+   - Glob for project docs using known locations above: `*.md`, `docs/**/*.md`, `**/CONTRIBUTING.md`, ADR folders
+   - Grep discovered docs to find which mention what changed
 
-## Step 2 — Update affected documents
+2. **Update affected documents**:
+   - Skill-owned documents first: ARCHITECTURE.md (structure changes?), SPEC.md (goals/scope changes?), WORKFLOW.md (commands/process changes?)
+   - Update each where it lives — never create root duplicates
+   - Skip HANDOFF.md (owned by /handoff skill)
+   - Then human-written docs affected by changes (README, API docs, etc.)
+   - Match each document's existing tone and language
 
-From the change context (conversation, recent diffs) and your discovery:
+3. **Don't rewrite untouched documents**: Only update docs the changes actually affect.
 
-- Skill-owned documents first: ARCHITECTURE.md (did structure change?), SPEC.md (did goals or scope change?), WORKFLOW.md (did commands or process change?). Update each where it lives — never create a duplicate at the root when the document exists elsewhere.
-- HANDOFF.md is owned by the handoff skill — don't edit it.
-- Then any human-written document the changes affect — a README section referencing a renamed command, an API doc for a changed endpoint. Match each document's existing tone and language.
-- Don't rewrite documents the changes don't touch. Don't create documents nobody asked for.
+## Workflow guidance
 
-## Output
+When AI needs to implement doc updates for this project:
 
-Report per-document edits — one line each: path + what changed.
+1. Check if mature doc-sync skills are available (`ecc:docs-sync`, etc.) — use them if present
+2. Otherwise, follow the discovery and update approach above
+3. Report per-document edits: path + what changed (one line each)
+
+## Keeping this guidance current
+
+If project doc structure changes (new `docs/` tree, ADR folders), regenerate this guidance with `/generate-project-skills`.

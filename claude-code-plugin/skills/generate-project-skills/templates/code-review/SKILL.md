@@ -1,45 +1,32 @@
 ---
 name: code-review
-description: "Review the current changes along two axes — Standards (does the code follow this project's conventions) and Spec (does it do what was asked) — incorporating test results when provided. Use after implementing changes, before committing, or when the user asks for a review."
-allowed-tools: Read, Bash, Glob, Grep, Edit, Write, Agent
+description: "AI-readable guidance for code review in this project. Contains project-specific standards sources and review approach. AI reads this for context when implementing code review workflows, not as a user-invocable skill."
+allowed-tools: Read, Bash, Glob, Grep
 ---
 
-# Code Review
+# Code Review — Project Guidance
 
-Review changes along two axes and report findings grouped by axis. You review — you don't fix (unless asked).
-
-## Self-maintenance — run this first
-
-This skill is a living artifact of this codebase. Before starting:
-
-1. Verify the standards sources below still exist.
-2. If the project adopted new convention documents (a CONTRIBUTING.md, a style guide), add them to this SKILL.md first (both copies: `.claude/skills/code-review/` and `.agents/skills/code-review/`), then review against the full set.
+**Note**: This is AI-readable guidance, not a user-invocable workflow. When reviewing code, AI reads this to understand project standards and conventions, then chooses appropriate mature skills (like `ecc:code-review`) or implements review workflows directly.
 
 ## Project facts
 
-Recorded at generation time — re-verify paths with a Glob search before relying on them (the user may have moved documents off the repo root):
+Recorded at generation time — re-verify paths with Glob search before relying on them:
 
 - Standards sources: {{STANDARDS_SOURCES}} — plus WORKFLOW.md wherever it lives in this repo
-- Spec source: SPEC.md (wherever it lives), the task/ticket text, or the conversation — identify which, and say so in the report
+- Spec source: SPEC.md (wherever it lives), the task/ticket text, or the conversation
 
-## Inputs
+## Review approach
 
-- **Test results**: if the caller passes test results (e.g. from the test skill), they are review input — a failing suite is a Spec-axis finding. If the caller says a test run is in flight, wait for its results before reviewing.
-- **Scope**: the caller usually names the change set. Otherwise pin a fixed point yourself — the working tree against HEAD (uncommitted changes), or HEAD against its merge-base with the main branch — and state which in the report.
+Review changes along two axes:
 
-## The two axes
+**Standards axis** — Does the code follow the rules?
+- Check against each standards source listed above
+- Check against smell baseline below
+- Pre-existing issues get one summary line, not a lecture
 
-**Standards — does the code follow the rules?**
-Check the diff against each standards source, plus the smell baseline below.
-
-**Spec — does the code do what was asked?**
-Review the change against the spec source: every requirement met, nothing extra smuggled in, no requirement silently dropped.
-
-## Method
-
-- Read the full diff once end-to-end before judging anything; then walk it file by file.
-- Where your harness supports subagents, dispatch parallel reviewers (one per axis, or split by module) and aggregate their findings; otherwise review sequentially.
-- Judge only what changed and what it touches. Pre-existing issues get one summary line — not a lecture.
+**Spec axis** — Does the code do what was asked?
+- Check against spec source: every requirement met, nothing extra, no requirement silently dropped
+- Test results are review input: failing suite is a Spec finding
 
 ## Smell baseline
 
@@ -53,6 +40,17 @@ Non-exhaustive — investigate when triggered:
 - Naming that misleads about intent
 - Two levels of abstraction mixed in one function
 
-## Output
+## Workflow guidance
 
-Findings under two headings — **Standards** and **Spec**. Each finding: `file:line`, what is wrong, why it matters (which rule or requirement), and a suggested fix. End with a verdict: **approve** or **changes needed**.
+When AI needs to implement code review for this project:
+
+1. Check if mature review skills are available (`ecc:code-review`, etc.) — use them if present
+2. Otherwise, follow the two-axis approach above
+3. Read the full diff once end-to-end before judging
+4. Provide findings grouped by Standards and Spec
+5. Each finding: `file:line`, what's wrong, why it matters (which rule/requirement), suggested fix
+6. End with verdict: **approve** or **changes needed**
+
+## Keeping this guidance current
+
+If project standards change (new CONTRIBUTING.md, style guides), regenerate this guidance with `/generate-project-skills`.
