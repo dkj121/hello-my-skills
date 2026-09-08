@@ -35,7 +35,7 @@ Before choosing a workflow, determine:
 - Uncertainty: clear / some unknowns / exploratory
 - Testability: easily testable / integration needed / hard to test
 - Security sensitivity: routine / touches auth/data / security-critical
-- Documentation impact: none / inline / architecture docs needed
+- Documentation impact: none / inline / core docs needed
 - Reversibility: trivial rollback / needs migration / irreversible
 
 **Task type** (may be multiple):
@@ -144,22 +144,36 @@ Perform explicit review when any of these apply:
 
 Fix issues found. Re-run validation if code changed.
 
-### 7. Update documentation
+**If errors or mistakes found during review:**
+- **STOP** — do not proceed to commit
+- Report all findings clearly to the user with file:line references
+- Explain what needs to be fixed
+- Wait for user to fix the issues or explicitly approve proceeding despite errors
+- Never commit code with known errors from review
 
-Update documentation only when implementation changes documented behavior, architecture, public interfaces, workflows, or operational procedures.
+### 7. Update core documentation (only when needed)
 
-**Do not** modify documentation merely to create activity.
+Update core documentation only when implementation changes foundational contracts:
 
-**Discover affected documents:**
-- Glob for skill-owned docs: `**/ARCHITECTURE.md`, `**/SPEC.md`, `**/WORKFLOW.md`
-- Grep to find which docs mention what changed
+**Check if core docs need updates:**
+- **ARCHITECTURE.md** — Did module structure, data flow, or architectural patterns change?
+- **SPEC.md** — Did goals, scope, or core requirements change?
+- **WORKFLOW.md** — Did build/test/deploy commands or process change?
+
+**If any core doc needs updating:** Check for mature core-docs-update capability or update directly:
+- Glob for each doc: `**/ARCHITECTURE.md`, `**/SPEC.md`, `**/WORKFLOW.md`
 - Update each where it lives — never create root duplicates
-- Match each document's existing tone and language
-- HANDOFF.md is owned by /handoff — don't edit it
+- Match existing tone and language
 
-**Check for mature doc-sync capability** and use if available.
+**Do not** update documentation merely to create activity. Most implementations don't need core doc updates.
 
 ### 8. Land the work
+
+**Before committing:** Verify all review findings are addressed. If any errors remain:
+- **STOP and remind user:** "Review found errors that must be fixed before committing"
+- List the specific errors
+- Wait for user to fix or explicitly approve
+- Do not proceed with commit
 
 Commit according to repository conventions found in WORKFLOW.md.
 
@@ -174,9 +188,9 @@ State:
 - Workflow selected and why
 - Capabilities used (mature skills invoked or direct implementation)
 - Validation performed
-- Review outcome (if applicable)
-- Documentation updated (if applicable)
-- Commit status
+- Review outcome — **if errors found, clearly state "COMMIT BLOCKED: errors must be fixed first" and list them**
+- Core documentation updated (if applicable)
+- Commit status (completed, or blocked pending fixes)
 
 <!-- activation-guide start -->
 ## On capability discovery
