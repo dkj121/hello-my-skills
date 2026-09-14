@@ -41,6 +41,20 @@ A personal workflow router that understands the task, classifies its nature and 
 
 AI analyzes both workflow and detail to understand intent. Unknown workflows are interpreted flexibly.
 
+## Workflow semantics
+
+The workflow argument gives a high-level approach hint. The AI interprets these flexibly based on task context:
+
+- **tdd / test-first**: Write tests before implementation. Red → Green → Refactor cycle.
+- **direct / implement-first**: Implement first, then verify. Add tests after working code exists.
+- **review**: Include an explicit code review step before committing.
+- **refactor**: Behavior-preserving changes. Tests must pass before and after.
+- **exploratory / spike**: Quick prototype to understand problem space. May not need full test coverage.
+- **quick / minimal**: Lightest possible validation. For trivial changes only.
+- **thorough / comprehensive**: Maximum validation and review. For high-risk changes.
+
+Custom keywords are interpreted based on context. When in doubt, AI chooses based on task classification.
+
 ## Steps
 
 ### 0. Pre-flight validation
