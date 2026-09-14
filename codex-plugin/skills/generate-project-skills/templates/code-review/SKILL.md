@@ -8,6 +8,18 @@ allowed-tools: Read, Bash, Glob, Grep
 
 **Note**: This is AI-readable guidance, not a user-invocable workflow. When reviewing code, AI reads this to understand project standards and conventions, then chooses appropriate mature review capabilities or implements review workflows directly based on task risk and complexity.
 
+## Generation metadata
+
+**Generated at:** {{GENERATION_TIMESTAMP}}
+**Facts used for staleness detection:**
+- Standards sources: {{STANDARDS_SOURCES}}
+- Documentation: {{DOCS_PATHS}}
+
+**Staleness check:** Before using this guidance, verify:
+1. Standards sources exist at paths above (Glob search)
+2. Key documentation paths exist (Glob search)
+3. If checks fail, this guidance is stale — prompt user to run `/generate-project-skills`
+
 ## Project facts
 
 Recorded at generation time — re-verify paths with Glob search before relying on them:

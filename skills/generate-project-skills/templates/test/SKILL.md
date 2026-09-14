@@ -8,6 +8,19 @@ allowed-tools: Read, Bash, Glob, Grep
 
 **Note**: This is AI-readable guidance, not a user-invocable workflow. When implementing tests, AI reads this to understand project conventions, then chooses appropriate mature capabilities or implements test workflows directly based on task risk and complexity.
 
+## Generation metadata
+
+**Generated at:** {{GENERATION_TIMESTAMP}}
+**Facts used for staleness detection:**
+- Test command: `{{TEST_COMMAND}}`
+- Test framework: {{TEST_FRAMEWORK}}
+- Test locations: {{TEST_LOCATIONS}}
+
+**Staleness check:** Before using this guidance, verify:
+1. Test command exists: `command -v {{TEST_COMMAND_BINARY}} >/dev/null 2>&1`
+2. Test locations exist: Check paths above with Glob/Bash
+3. If checks fail, this guidance is stale — prompt user to run `/generate-project-skills`
+
 ## Project facts
 
 - Test framework: {{TEST_FRAMEWORK}}

@@ -60,11 +60,25 @@ The frontier is the set of questions whose prerequisites are already settled —
   >    ➡️ Recommended: SQLite — the query patterns in the plan need filtering, and stdlib support is good enough.
 - If the user delegates a question back to you, decide it, record the decision with one line of rationale, and move on.
 
-### 6. Choose the medium
+### 6. Choose the medium and handle tool limits
 
-- Prefer a structured question tool (e.g. AskUserQuestion) when your harness provides one: it renders options and captures answers cleanly.
-- If a round has more questions than a single call accepts, split it across consecutive calls — keep numbering continuous.
-- Without such a tool, list the round's questions in the conversation in the format above.
+**Prefer a structured question tool** (e.g. AskUserQuestion) when your harness provides one: it renders options and captures answers cleanly.
+
+**Handle tool call limits:** If a round has more questions than a single call accepts (e.g., tool limit is 4 questions but round has 8):
+- Split across consecutive calls in the same response
+- Keep question numbering continuous (questions 1-4 in first call, 5-8 in second call)
+- Each call is one frontier round — wait for all answers before proceeding
+
+**Example with 8 frontier questions:**
+```
+First AskUserQuestion call: questions 1-4
+Second AskUserQuestion call: questions 5-8
+[Both in same response, then wait for user]
+```
+
+**Without a structured tool:** List the round's questions in the conversation using the format:
+> N. ❓ **Title** — question text?  
+>    ➡️ Recommended: answer with rationale
 
 ### 7. Wait for answers
 

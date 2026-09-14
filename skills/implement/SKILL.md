@@ -1,13 +1,15 @@
 ---
 name: implement
-description: "Personal engineering router that classifies work, assesses risk, and selects appropriate workflows. Delegates to mature capabilities when available, implements directly when needed. Use when the user asks to implement, build, or fix something."
+description: "Personal engineering router that classifies work, assesses risk, and selects appropriate workflows. User specifies workflow via arguments when needed. Use when the user asks to implement, build, or fix something."
+argument-hint: "Optional: specify workflow (tdd, direct, review) and free-form task details"
+allowed-tools: Read, Bash, Glob, Grep, Edit, Write, Agent
 ---
 
 # Implement
 
 ## Overview
 
-A personal workflow router that understands the task, classifies its nature and risk, then selects the appropriate workflow and capabilities to complete it. Acts as a supervisor layer above project-specific workflows and mature skill libraries, not as a fixed execution chain.
+A personal workflow router that understands the task, classifies its nature and risk, then selects the appropriate workflow to complete it. User can optionally specify workflow preference via arguments.
 
 ## When to use
 
@@ -15,7 +17,47 @@ A personal workflow router that understands the task, classifies its nature and 
 - When a spec, ticket, or conversation describes work to be done
 - As the entry point for substantial engineering work
 
+## Arguments
+
+**Format:** `/implement [workflow] [detail]`
+
+- **[workflow]** (optional): Single keyword suggesting workflow approach
+- **[detail]** (optional): Free-form text providing task context
+
+**Example workflows:**
+- `tdd` — Test-driven development: write tests first, then implement
+- `direct` — Direct implementation: implement then verify
+- `review` — Include explicit code review step
+- `refactor` — Behavior-preserving restructure
+- Custom keywords — AI interprets based on context
+
+**Examples:**
+- `/implement tdd focus on auth endpoints`
+- `/implement direct simple config fix`
+- `/implement review security-sensitive changes`
+- `/implement` (no args — AI chooses based on classification)
+
+AI analyzes both workflow and detail to understand intent. Unknown workflows are interpreted flexibly.
+
 ## Steps
+
+### 0. Pre-flight validation
+
+**Before starting, validate project guidance skills if they exist:**
+
+Check for project skills in `.claude/skills/` or `.agents/skills/`. If found, verify basic facts:
+- Test command exists and is executable
+- Documented files (ARCHITECTURE.md, SPEC.md, WORKFLOW.md) exist at expected paths
+- Key project facts from generation time are still valid
+
+**On staleness detected:**
+- Block and prompt: "Project skills are stale. Run /generate-project-skills to update?"
+- Wait for user to regenerate or override
+- Do not proceed with stale guidance
+
+**Skip pre-flight if:**
+- No project skills exist (`.claude/skills/` and `.agents/skills/` both missing)
+- User explicitly bypassed validation
 
 ### 1. Orient on context
 
@@ -51,7 +93,14 @@ Before choosing a workflow, determine:
 
 ### 3. Select workflow
 
-Based on classification, choose the narrowest workflow that provides sufficient confidence:
+Consider user-provided workflow argument first. If provided, interpret it:
+- `tdd` or `test-first` → Test-driven: write tests first, implement to pass
+- `direct` or `implement-first` → Implementation-first: code then verify
+- `review` → Include explicit review step
+- `refactor` → Behavior-preserving changes, tests must pass before and after
+- Other keywords → Interpret flexibly based on context
+
+If no workflow specified, choose based on classification:
 
 **For trivial/local changes:**
 - Implement directly
@@ -64,7 +113,6 @@ Based on classification, choose the narrowest workflow that provides sufficient 
 - Choose verification scope based on risk
 
 **For new features:**
-- Check if mature TDD capability exists and is materially useful
 - Prefer test-first when practical: agree seam → red → green cycles
 - Otherwise: implement → verify → test coverage where needed
 
@@ -86,22 +134,15 @@ Based on classification, choose the narrowest workflow that provides sufficient 
 **Proportionality principle:**
 Do not introduce process overhead disproportionate to risk or complexity. Small, low-risk changes get focused verification. Larger or riskier changes progressively add: planning → tests → review → documentation → broader verification.
 
-### 4. Execute with appropriate capabilities
+### 4. Execute the workflow
 
-**Check for mature capabilities first:**
-- Look for project-installed or environment-provided mature skills
-- Examples: TDD guidance, test runners, review tools, security scanners, doc sync
-- Prefer mature capabilities when they exist and materially improve the workflow
+Follow the workflow selected in step 3. Use project guidance (test commands, standards sources, doc locations) from project skills as context when available.
 
-**If mature capabilities available:**
-- Use them according to their guidance
-- Example: A project may have mature TDD workflow — follow it
-- Example: An environment may provide review capability — use it
-
-**If implementing directly:**
-- Follow the workflow selected in step 3
-- Use project guidance (test commands, standards sources, doc locations) as context
-- Apply appropriate engineering practices for the task type
+**Apply appropriate engineering practices for the task type:**
+- For TDD: Agree on seams → write failing tests → implement to pass → refactor
+- For direct implementation: Code → verify → add tests where needed
+- For refactoring: Verify tests pass → make changes → verify still pass
+- For architecture changes: Update foundational docs first → implement → validate broadly
 
 ### 5. Validate
 
@@ -128,19 +169,18 @@ Perform explicit review when any of these apply:
 - Concurrency / persistence / migration changes
 - High-risk business logic
 - Task is large or difficult to reason about
+- User requested review (via workflow argument or task context)
 
-**Check for mature review capability:**
-- Project may have review workflow or standards
-- Environment may provide review tools
-- Use when available and appropriate
-
-**Otherwise:** Self-review against ARCHITECTURE.md, SPEC.md, WORKFLOW.md conventions and smell baseline:
-- Abstraction for single caller
-- Duplicated logic that could share a seam
-- Dead code, leftover debug output
-- Error swallowing
-- Misleading names
-- Mixed abstraction levels
+**Review against:**
+- ARCHITECTURE.md, SPEC.md, WORKFLOW.md conventions
+- Project code-review guidance (if exists)
+- Smell baseline:
+  - Abstraction for single caller
+  - Duplicated logic that could share a seam
+  - Dead code, leftover debug output
+  - Error swallowing
+  - Misleading names
+  - Mixed abstraction levels
 
 Fix issues found. Re-run validation if code changed.
 
@@ -185,28 +225,19 @@ Create a single commit when the repository workflow or task context calls for it
 
 State:
 - Task classification (type, size, risk factors)
-- Workflow selected and why
-- Capabilities used (mature skills invoked or direct implementation)
+- Workflow selected (user-specified or AI-chosen) and why
+- Implementation approach
 - Validation performed
 - Review outcome — **if errors found, clearly state "COMMIT BLOCKED: errors must be fixed first" and list them**
 - Core documentation updated (if applicable)
 - Commit status (completed, or blocked pending fixes)
+- Commit status (completed, or blocked pending fixes)
 
 <!-- activation-guide start -->
-## On capability discovery
+## Activating other skills
 
-This skill acts as a router and supervisor, not a fixed workflow executor.
+When this skill needs to activate another skill, invoke the Skill tool:
 
-**When checking for capabilities:**
-- Look for mature skills in the environment (project-installed or harness-provided)
-- Read project guidance skills (in `.claude/skills/` or `.agents/skills/`) for context, not execution
-- Prefer mature capabilities when they exist and materially improve the workflow
-- Do not hardcode specific tool names — describe the capability need, then look for what satisfies it
-
-**When activating capabilities:**
-- If the harness provides a Skill tool, use it to invoke discovered skills
-- Otherwise, read the skill's documentation and follow it
-- Where harness supports agents/subagents, use them to keep context clean
-
-This approach keeps personal workflow stable while allowing the capability ecosystem to evolve.
+- Project-level skills (`test`, `code-review`, `docs-update`): invoke with the plain name, e.g. `test`.
+- Bundled skills from this plugin: invoke with the plain name (e.g. `to-docs`); if the name is ambiguous, use the plugin-qualified form `hello-my-skills:<skill-name>`.
 <!-- activation-guide end -->

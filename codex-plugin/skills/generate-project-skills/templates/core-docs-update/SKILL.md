@@ -10,6 +10,16 @@ allowed-tools: Read, Bash, Glob, Grep
 
 **Core documentation files**: ARCHITECTURE.md (structure), SPEC.md (goals), WORKFLOW.md (process). These are foundational project documents. Other documentation (README, API docs, inline comments) is not covered by this guidance.
 
+## Generation metadata
+
+**Generated at:** {{GENERATION_TIMESTAMP}}
+**Facts used for staleness detection:**
+- Documentation locations: {{DOC_LOCATIONS}}
+
+**Staleness check:** Before using this guidance, verify:
+1. Core docs exist at expected paths (Glob: `**/ARCHITECTURE.md`, `**/SPEC.md`, `**/WORKFLOW.md`)
+2. If docs moved and not found, this guidance is stale — prompt user to run `/generate-project-skills`
+
 ## Project facts
 
 - Known documentation locations: {{DOC_LOCATIONS}} — plus the repo root (ARCHITECTURE.md, SPEC.md, WORKFLOW.md default there)
