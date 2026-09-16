@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review code changes against project conventions and architecture."
+policy:
+  allow_implicit_invocation: false

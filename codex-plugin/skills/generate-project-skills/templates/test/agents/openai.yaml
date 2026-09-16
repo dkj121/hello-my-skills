@@ -1,0 +1,5 @@
+interface:
+  display_name: "Test"
+  short_description: "Run project tests using discovered test commands."
+policy:
+  allow_implicit_invocation: false

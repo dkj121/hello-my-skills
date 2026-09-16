@@ -2,6 +2,7 @@
 name: core-docs-update
 description: "AI-readable guidance for core documentation updates in this project. Contains project-specific doc locations. AI reads this for context when implementing core doc update workflows, not as a user-invocable skill. Core docs: ARCHITECTURE.md, SPEC.md, WORKFLOW.md."
 allowed-tools: Read, Bash, Glob, Grep
+allowed-user-invocation: false
 ---
 
 # Core Docs Update — Project Guidance

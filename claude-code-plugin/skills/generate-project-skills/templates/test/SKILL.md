@@ -2,6 +2,7 @@
 name: test
 description: "AI-readable guidance for testing in this project. Contains project-specific test commands, framework, and conventions. AI reads this for context when implementing test workflows, not as a user-invocable skill."
 allowed-tools: Read, Bash, Glob, Grep
+allowed-user-invocation: false
 ---
 
 # Test — Project Guidance

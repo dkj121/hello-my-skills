@@ -1,0 +1,5 @@
+interface:
+  display_name: "Update Core Docs"
+  short_description: "Update ARCHITECTURE, SPEC, and WORKFLOW after implementation changes."
+policy:
+  allow_implicit_invocation: false

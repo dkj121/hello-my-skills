@@ -2,6 +2,7 @@
 name: code-review
 description: "AI-readable guidance for code review in this project. Contains project-specific standards sources and review approach. AI reads this for context when implementing code review workflows, not as a user-invocable skill."
 allowed-tools: Read, Bash, Glob, Grep
+allowed-user-invocation: false
 ---
 
 # Code Review — Project Guidance
