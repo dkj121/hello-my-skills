@@ -53,14 +53,8 @@ hello-my-skills/
 ├── claude-code-plugin/      # 生成物：Claude Code 插件（已通过 claude plugin validate）
 ├── codex-plugin/            # 生成物：Codex / ChatGPT 插件（含各技能 agents/openai.yaml，已实测安装）
 ├── .claude-plugin/          # 生成物：Claude marketplace.json（GitHub 一键安装入口）
-├── .agents/plugins/         # 生成物：Codex marketplace.json（GitHub 一键安装入口）
-└── scripts/sync.sh          # 由 skills/ 重新生成以上四个生成物
+└── .agents/plugins/         # 生成物：Codex marketplace.json（GitHub 一键安装入口）
 ```
-
-三个变体的差异全部由 `scripts/sync.sh` 处理：
-
-- **frontmatter**：canonical 源只含 `name` + `description`；Claude 版追加 `allowed-tools`、`disable-model-invocation`、`argument-hint`；Codex 版生成 `agents/openai.yaml`（`policy.allow_implicit_invocation` 控制模型自动激活）
-- **互调措辞**：canonical 正文以 `<!-- activation-guide -->` 标记块承载中性说明；Claude 版改写为 Skill 工具调用，Codex 版改写为读取 `.agents/skills/` 执行 / `$skill`，通用版保持中性
 
 ## 安装
 
@@ -108,9 +102,3 @@ cp -r skills/* ~/.agents/skills/
 ```
 
 项目级技能由 `/generate-project-skills` 在目标项目内生成，无需手动安装。
-
-## Develop
-
-1. 修改 `skills/` 下的 canonical 源（英文正文，中性措辞 + `activation-guide` 标记块）
-2. 运行 `scripts/sync.sh` 重新生成两个插件目录与 marketplace.json
-3. `scripts/sync.sh --check` 校验生成物与源同步（可用于 CI）
