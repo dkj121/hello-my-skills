@@ -1,7 +1,7 @@
 ---
 name: implement
 description: "Personal engineering router that classifies work, assesses risk, and selects appropriate workflows. User specifies workflow via arguments when needed. Use when the user asks to implement, build, or fix something."
-argument-hint: "Optional: specify workflow (tdd, direct, review, refactor, exploratory, minimal, comprehensive or others) and free-form task details"
+argument-hint: "[workflow (tdd, direct, review, refactor, exploratory, minimal, comprehensive or others)]|[details]"
 allowed-tools: Read, Bash, Glob, Grep, Edit, Write, Agent
 ---
 
@@ -19,7 +19,7 @@ A personal workflow router that understands the task, classifies its nature and 
 
 ## Arguments
 
-**Format:** `/implement [workflow] [detail]`
+**Format:** `/implement [workflow]|[detail]`
 
 - **[workflow]** (optional): Single keyword suggesting workflow approach
 - **[detail]** (optional): Free-form text providing task context
