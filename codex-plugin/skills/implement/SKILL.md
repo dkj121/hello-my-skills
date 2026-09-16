@@ -2,7 +2,6 @@
 name: implement
 description: "Personal engineering router that classifies work, assesses risk, and selects appropriate workflows. User specifies workflow via arguments when needed. Use when the user asks to implement, build, or fix something."
 argument-hint: "[workflow (tdd, direct, review, refactor, exploratory, minimal, comprehensive or others)]|[details]"
-allowed-tools: Read, Bash, Glob, Grep, Edit, Write, Agent
 ---
 
 # Implement
@@ -10,6 +9,9 @@ allowed-tools: Read, Bash, Glob, Grep, Edit, Write, Agent
 ## Overview
 
 A personal workflow router that understands the task, classifies its nature and risk, then selects the appropriate workflow to complete it. User can optionally specify workflow preference via arguments.
+
+**Step map:**
+0. Pre-flight → 1. Orient → 2. Classify → 3. Select workflow → 4. Execute → 5. Validate → 6. Review (subagent) → 7. Update docs → 8. Land
 
 ## When to use
 
@@ -185,25 +187,35 @@ Perform explicit review when any of these apply:
 - Task is large or difficult to reason about
 - User requested review (via workflow argument or task context)
 
-**Review against:**
+**Delegate to subagent for focused review:**
+
+When review is warranted, spawn a subagent with the Agent tool to perform the review:
+
+```
+Agent({
+  description: "Review implementation changes",
+  prompt: "Review the git diff for: [list specific concerns based on change type].
+  
+Review against:
 - ARCHITECTURE.md, SPEC.md, WORKFLOW.md conventions
 - Project code-review guidance (if exists)
-- Smell baseline:
-  - Abstraction for single caller
-  - Duplicated logic that could share a seam
-  - Dead code, leftover debug output
-  - Error swallowing
-  - Misleading names
-  - Mixed abstraction levels
+- Smell baseline: abstraction for single caller, duplicated logic, dead code, error swallowing, misleading names, mixed abstraction levels
 
-Fix issues found. Re-run validation if code changed.
+Report all findings with file:line references. Flag blocking issues clearly."
+})
+```
 
-**If errors or mistakes found during review:**
-- **STOP** — do not proceed to commit
+The subagent reviews in isolation, providing fresh perspective without your implementation context.
+
+**Process review findings:**
+
+- If the subagent reports errors or blocking issues: **STOP** — do not proceed to commit
 - Report all findings clearly to the user with file:line references
 - Explain what needs to be fixed
 - Wait for user to fix the issues or explicitly approve proceeding despite errors
 - Never commit code with known errors from review
+
+Fix issues found. Re-run validation if code changed.
 
 ### 7. Update core documentation (only when needed)
 
@@ -244,7 +256,6 @@ State:
 - Validation performed
 - Review outcome — **if errors found, clearly state "COMMIT BLOCKED: errors must be fixed first" and list them**
 - Core documentation updated (if applicable)
-- Commit status (completed, or blocked pending fixes)
 - Commit status (completed, or blocked pending fixes)
 
 <!-- activation-guide start -->
